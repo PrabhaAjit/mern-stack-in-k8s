@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 services:
   mongo:
     image: mongo:6
@@ -12,7 +12,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     environment:
-      - ATLAS_URI=${ATLAS_URI}
+      ATLAS_URI: "${ATLAS_URI}"
     ports:
       - "5000:5000"
     depends_on:

@@ -1,14 +1,18 @@
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
+# Base image for Node.js
 FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app ./
-EXPOSE 5000
-CMD ["node", "server.js"]
 
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy server files
+COPY . .
+
+# Expose server port
+EXPOSE 5000
+
+# Start the server
+CMD ["node", "server.js"]
