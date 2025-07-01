@@ -11,19 +11,22 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    image: prabhaajit/mern-server:latest        
     environment:
       ATLAS_URI: "${ATLAS_URI}"
     ports:
       - "5000:5000"
     depends_on:
       - mongo
+            
 
   client:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile         
       args:
         REACT_APP_YOUR_HOSTNAME: ${REACT_APP_YOUR_HOSTNAME} #http://server:5000
+    image: prabhaajit/mern-client:latest          
     ports:
       - "3000:80"
     depends_on:

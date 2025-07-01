@@ -1,0 +1,50 @@
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-secret
+type: Opaque
+stringData:
+  atlasUri: "mongodb+srv://mongodbuser:mongodbuser%40123@cluster0.bwy2ywd.mongodb.net/mern-stack-db?retryWrites=true&w=majority&appName=Cluster0"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: prabhaajit/mern-server:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ATLAS_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: atlasUri           
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-service
+spec:
+  ports:
+    - port: 5000
+      targetPort: 5000
+  selector:
+    app: server
+  type: ClusterIP
