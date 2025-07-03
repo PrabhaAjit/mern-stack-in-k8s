@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: prabhaajit/mern-client:latest
+          image: prabhaajit/mern-client:$TAG
           ports:
             - containerPort: 80
 
