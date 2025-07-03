@@ -24,9 +24,9 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile         
-      args:
-        REACT_APP_YOUR_HOSTNAME: ${REACT_APP_YOUR_HOSTNAME} #http://server:5000
     image: prabhaajit/mern-client:${TAG}          
+    environment: 
+        REACT_APP_YOUR_HOSTNAME: ${REACT_APP_YOUR_HOSTNAME} #http://server:5000
     ports:
       - "3000:80"
     depends_on:
