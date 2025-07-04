@@ -28,6 +28,8 @@ metadata:
 spec:
   ports:
     - port: 80
+      targetPort: 3000  # Assuming your React app runs on 3000
+      nodePort: 30007   # Optional: specify a port (30000-32767)      
   selector:
     app: client
-  type: LoadBalancer
+  type: NodePort
