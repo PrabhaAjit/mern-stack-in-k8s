@@ -51,7 +51,7 @@ export default function RecordList() {
         }
 
 //        await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/${id}`, {
-        await fetch(`/api/${id}`, {	    //        
+        await fetch(`/api/record/${id}`, {	    //        
             method: "DELETE"
         })
 

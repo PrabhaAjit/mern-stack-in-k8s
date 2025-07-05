@@ -20,7 +20,7 @@ export default function Create() {
 
         const newPerson = { ...form }
 //        const response = await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/record/add`, {
-        const response = await fetch(`/record/add`, {
+        const response = await fetch(`/api/record/add`, {
 	method: "POST",
             headers: {
                 "Content-Type": "application/json"
