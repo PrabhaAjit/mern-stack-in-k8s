@@ -14,7 +14,7 @@ export default function Edit() {
         async function fetchData() {
             const id = params.id
 //            const response = await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/record/${id}`)
-	    const response = await fetch(`/app/record/${id}`)
+	    const response = await fetch(`/record/${id}`)
             if (!response.ok) {
                 const message = `An error occurred: ${response.statusText}`
                 window.alert(message)
@@ -47,7 +47,7 @@ export default function Edit() {
 
         const editedPerson = { ...form }
   //      const response = await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/update/${params.id}`, {
-        const response = await fetch(`/app/update/${params.id}`, {
+        const response = await fetch(`/update/${params.id}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
