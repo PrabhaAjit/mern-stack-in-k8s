@@ -3,9 +3,9 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Accept build argument
-ARG REACT_APP_YOUR_HOSTNAME
+#ARG REACT_APP_YOUR_HOSTNAME
 # Set it as env var for the build
-ENV REACT_APP_YOUR_HOSTNAME=$REACT_APP_YOUR_HOSTNAME
+#ENV REACT_APP_YOUR_HOSTNAME=$REACT_APP_YOUR_HOSTNAME
 
 COPY package*.json ./
 RUN npm install

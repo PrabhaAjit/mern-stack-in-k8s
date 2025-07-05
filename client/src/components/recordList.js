@@ -27,8 +27,8 @@ export default function RecordList() {
 
     useEffect(() => {
         async function getRecords() {
-            const response = await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/record/`)
-
+//            const response = await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/record/`)
+            const response = await fetch(`/api/record/`)
             if (!response.ok) {
                 const message = `An error occurred: ${response.statusText}`
                 window.alert(message)
@@ -50,7 +50,8 @@ export default function RecordList() {
             return
         }
 
-        await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/${id}`, {
+//        await fetch(`${process.env.REACT_APP_YOUR_HOSTNAME}/${id}`, {
+        await fetch(`/api/${id}`, {	    //        
             method: "DELETE"
         })
 
