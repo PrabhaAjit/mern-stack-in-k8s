@@ -5,7 +5,7 @@ metadata:
   name: mongo-secret
 type: Opaque
 stringData:
-  atlasUri: "mongodb+srv://mongodbuser:mongodbuser%40123@cluster0.bwy2ywd.mongodb.net/mern-stack-db?retryWrites=true&w=majority&appName=Cluster0"
+  atlasUri: "mongodb://mongodb-service:27017/mern-stack-db"
 
 ---
 
