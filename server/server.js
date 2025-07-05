@@ -8,7 +8,7 @@ app.use(express.json())
 
 //app.use(require("./routes/record"))
 const recordRouter = require("./routes/record")
-app.use("/app/record", recordRouter)
+app.use("/record", recordRouter)
 
 const dbo = require("./db/conn")
 
