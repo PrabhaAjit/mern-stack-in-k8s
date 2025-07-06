@@ -209,11 +209,11 @@ kind create cluster --name=multi-node-cluster --config=kind-multi-node.yaml
 
 ![image](https://github.com/user-attachments/assets/1fdba79b-451c-47ad-ad1e-6129c156f2ab)
 ```bash
-$ kind get clusters
+kind get clusters
 ```
 ---
 
-**Jenkins](https://www.jenkins.io/doc/book/installing/)**  
+**Jenkins**  
 Install guide:  [Jenkins Official Docs](https://www.jenkins.io/doc/book/installing/linux/)  
 Java is required to run Jenkins. Run below command to install Java
 ```bash
