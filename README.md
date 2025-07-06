@@ -1,159 +1,192 @@
-## Deploy a MERN (MongoDB, Express.js, React, Node.js) stack application using Docker, Jenkins and Kubernetes
-[mern-stack-in-k8s] (https://github.com/PrabhaAjit/mern-stack-in-k8s) is a full-stack MERN application that manages the basic information of employees. MongoDB database is used as backend db for displaying employee info in frontend UI React.
+## 🚀 Deploy a MERN Stack Application with Docker, Jenkins & Kubernetes
+[mern‑stack‑in‑k8s](https://github.com/PrabhaAjit/mern-stack-in-k8s) is a full‑stack MERN app for managing employee info. It uses MongoDB for the backend and React for the frontend UI.
+## A) 📦 Prerequisites
+Make sure you have the following installed and configured:
+- Docker  
+- Docker Compose  
+- Kubernetes cluster (e.g., KIND)  
+- kubectl  
+- Jenkins  
+- Git  
+- GitHub and Docker Hub accounts  
+- MERN stack code (cloned from GitHub)  
+Refer to the installation guide below in Section E.
 
-**Prerequisites to deploy project locally**
-Docker 
-Docker Compose
-Kubernetes cluster (KIND)
-kubectl 
-Jenkins 
-Git 
-Gihub, Dockerhub accounts
-MERN stack code cloned from github
-Refer installation guide below in D section.
+---
+## B)🐳 DOCKERIZE THE MERN STACK
+**1. Project Setup**
 
-## A) DOCKERISE THE MERN STACK
-**1.	Set Up Project Structure**
-Create a folder mern-stack in local laptop and clone the MERN stack project from github
+Create a folder mern-stack in local laptop and clone the MERN stack repo from Github. 
 ```bash
-cd mern-stack
+mkdir mern-stack  && cd mern-stack
 git init 
 git clone https://github.com/doananhtingithub40102/mern-app.git
-
-Create the files which are required for automatic deployment of MERN application as shown below in respective folders. 
-![image](https://github.com/user-attachments/assets/9153dfba-4739-4f18-8440-8d89bd092f58) 
+```
+Create necessary files for auto-deployment within appropriate folders: 
+![image](https://github.com/user-attachments/assets/aae9c49f-92c4-46e9-ada7-0bb4ff393bd8)
 
 **2. Set up Dockerfile**
-Each service has its own Dockerfile. Create a Dockerfile and .dockerignore files inside server and client folders. Dockerfile is referred in docker-compose.yaml
+
+Each service (client,server) should have its own Dockerfile and .dockerignore. This Dockerfile is referred in docker-compose.yaml
 
 **3. Set Up Docker Compose**
-Docker Compose manages the multiple containers (MongoDB, Node.js, React). Create a docker-compose.yml file at the root of your project to define and manage your services.
+
+Docker Compose manages the multiple containers (MongoDB, Node.js, React). Create a docker-compose.yaml file at the root of your project to define and manage these services.
 
 **4. Testing Locally with Docker**
-Build & Run MERN stack containers: Navigate to your project's root directory and execute:
+
+Build & Run MERN stack containers: Navigate to your project's root directory and execute
 ```bash
 docker login
 docker-compose up –build
-
+```
 This command builds the images and starts all services.
-Open the app in the browser and verify the below links and confirm both frontend UI and backend app is running.
-Client: http://localhost:3000
-Server: http://localhost:5000
+Open the links in browser and verify both frontend UI and backend apps are running.  
+Client: `http://localhost:3000`    
+Server: `http://localhost:5000`
+
+---
 
 **5. Push images to DockerHub or any registry**
-Add below fields in docker-compose.yaml to name images and rebuild  docker images.
+
+Add below fields in docker-compose.yaml to name images. You have to specify your dockerbub username, server/client image names and tags. Rebuild the docker images.
+```yaml
 services:
   server:
     build: ./server
-    image: prabhaajit/mern-server:latest
+    image: <DockerHub-Username>/<Server-Image-Name>:<Tag>
   client:
     build: ./client
-    image: prabhaajit/mern-client:latest
-Once docker images is verified we can push them into docker registry.
+    image: <DockerHub-Username>/<-ClientImage-Name>:<Tag>
+```
+Once docker containers are up and running we can push them into docker registry.
 ```bash
-docker push prabhaajit/mern-server:latest
-docker push prabhaajit/mern-client:latest
-
-## B) DEPLOY WITH KUBERNETES
-Kubernetecs use the dockerised images of our frontend and backend from dockerhub
-and use them for pod creation. client.yaml file has definition for pod deployment and its services for frontend application. server.yaml file has definition for pod deployment and its services for backend application. mongodb.yaml has definition for pod creation for database. Run below commands to create all resources and their services. 
+docker push <DockerHub-Username>/<-ClientImage-Name>:<Tag>
+docker push <DockerHub-Username>/<Server-Image-Name>:<Tag>
+```
+---
+## C)☸️ DEPLOY WITH KUBERNETES
+Use images from DockerHub in K8s manifests to create pods and their resources.
+Frontend: React app (deployed via client.yaml)  
+Backend: Node.js/Express API (deployed via server.yaml)  
+Database: MongoDB (deployed via mongodb.yaml)
+Apply Kubernetes Manifests:
 ```bash
 kubectl apply -f client.yaml
 kubectl apply -f server.yaml
 kubectl apply -f mongodb.yaml
 kubectl apply -f ingress.yaml
-
-Verify the status of pods and services.
+```
+Verify the status of pods and services. 
 ```bash
 kubectl get pods
 kubcetl get services
 kubectl get deploy
-
-![image](https://github.com/user-attachments/assets/d0a254cc-506a-4fcd-8023-33576df3e266)
-
+```
+For trouble shooting
 ```bash
-kubectl port-forward service/client-service 8086:80
+# Check pod logs
+kubectl logs <pod-name> -f
+# Debug services
+kubectl describe svc <service-name>
+```
+![image](https://github.com/user-attachments/assets/768bcbc4-1210-4c2d-992d-2df8234e8d1d)
+```bash
 
-And verify http://localhost:8086/
+```
+Verify `http://localhost:8086/` and web page will open with the list of employees as given below.
+![image](https://github.com/user-attachments/assets/0a0766c8-c1b5-43e8-93eb-a13fbf27cbae)
 
+---
 
-![my picture](https://doananhtingithub40102.github.io/MyData/mern/mypicture.png)
+## D)🤖 JENKINS AUTOMATION
 
-![image](https://github.com/user-attachments/assets/635a9031-5788-40f5-87ae-535f90264dcb)
-
-## C) JENKINS AUTOMATION
 Entire process of pulling source code from Git, docker image creation, and deploying in Kubernetes can be automated using Jenkins. Create a Jenkinsfile with the automated script
-and place it in project root directory. Create a pipeline job in Jenkins and attach the Jenkinsfile. Build Jenkins job and the entire process is automated and pods will be deployed.
+and place it in project root directory. Create a pipeline job in Jenkins and attach the Jenkinsfile. Build Jenkins job and the entire process is automated and pods will be deployed.  
+**Jenkins Pipeline**  
+  A Jenkinsfile defines stages:  
+  •	**Checkout**: Pulls code from GitHub.  
+  •	**Build Images:** Uses docker-compose to build React and Node.js Docker images.  
+  •	**Push to DockerHub:** Authenticates using Jenkins credentials and pushes images to DockerHub.  
+  •	**Deploy to Kubernetes:** Uses a kubeconfig credential to apply Kubernetes manifests. Variables are injected using envsubst.  
+  •	**Cleanup:** Removes local Docker images and cleans up workspace.  
 
-**Jenkins Pipeline**
-A Jenkinsfile defines stages:
-•	Checkout: Pulls code from GitHub.
-•	Build Images: Uses docker-compose to build React and Node.js Docker images.
-•	Push to DockerHub: Authenticates using Jenkins credentials and pushes images to DockerHub.
-•	Deploy to Kubernetes: Uses a kubeconfig credential to apply Kubernetes manifests. Variables are injected using envsubst.
-•	Cleanup: Removes local Docker images and cleans up workspace.
+**Jenkins Pipeline Setup**  
 
-**1)	Ensure these Jenkins plugins are installed:**
-1.	Docker Pipeline
-2.	Kubernetes CLI
-3.	Credentials Binding                  
-4.	Git
+**1)	Install required plugins**  
+  1.	Docker Pipeline
+  2.	Kubernetes CLI
+  3.	Credentials Binding               
+  4.	Git
 
-**2)	Click on New Item. Enter job name as ‘mern-stack-deploy’ and job type as Pipeline and click OK.**
-![image](https://github.com/user-attachments/assets/dbfa1b17-d91e-4404-a024-4f592d613b64)
+**2)	Create Pipeline Job**  
+      Navigate to dashboard New Item. Enter job name (eg. ‘mern-stack-deploy’) and job type as Pipeline and click OK.
+      ![image](https://github.com/user-attachments/assets/d2c26bed-e967-42a6-8aa4-94f0fc3fc783)      
 
-3)	Dashboard->mern-stack-deploy(select your pipeline job)->Click Configure
-General-> Pipeline Defnition->Select Pipeline script from SCM and mention your repository URL
+**3)	Set SCM**  
+      Dashboard->mern-stack-deploy(select your pipeline job)->Click Configure
+      General-> Pipeline Defnition->Select Pipeline script from SCM and mention your repository URL
+      ![image](https://github.com/user-attachments/assets/26ce869a-0689-4121-89c6-dc979192297d)
 
-![image](https://github.com/user-attachments/assets/0d467619-b957-40c7-9208-c731d5aea5d1)
+**4)	Set Jenkinsfile**  
+      A Jenkinsfile with the pipeline script is selected. It is kept in the project root folder in github.
 
-4)	A Jenkinsfile with the pipeline script is selected. It is kept in the project root folder in github.
+**5)	Create Credentials**  
+      Dashboard->Manage Jenkins->Credentials->globals->Add credentials  
+      1.	 Docker Hub: For pulling docker images from dockerhub.  
+           Kind- username and password  
+           Username : <dockerhub username>  
+           Password : <dockerhub password>  
+           ID: dockerhubcredentials  
+      2.	Kubectl credentials – For applying kubectl commands in Jenkins pipeline script  
+          Kind- secret file  
+          File : <attach kube config file from ~/.kube folder>  
+          ID : kubeconfig-credentials-id  
+      ![image](https://github.com/user-attachments/assets/5bfea327-8965-4429-b898-9ba6533e907f)
 
-5)	Dashboard->Manage Jenkins->Credentials->globals->Add credentials
-  	Create 2 credentials
-    1.	 Docker Hub: For pulling docker images from dockerhub.
-         Kind- username and password
-         Username : <docker hub username>
-         Password : <docker hub password>
-         ID: dockerhubcredentials
-    2.	Kubectl credentials – For applying kubectl commands in Jenkins pipeline script
-        Kind- secret file
-        File : <attach kube config file from ~/.kube folder>
-        ID : kubeconfig-credentials-id
-![image](https://github.com/user-attachments/assets/720795a5-c90b-451e-ae32-7ad1bb70b52e)
+**6)	Build Project**  
+      Build the project by clicking the Build Now button.      
+      ![image](https://github.com/user-attachments/assets/688ad4c7-6dba-45ce-9f30-09600f5a3b6a)
 
-6)	Build the project by clicking the Build Now button.
-![image](https://github.com/user-attachments/assets/8562e98a-d1c1-440d-bb0c-6e0cab9262cf)
+**7) When jenkins build is successful verify if the pods are running successfully.**
 
-7)	When jenkins build is successful verify if the pods are running successfully. 
-    ```bash    
-    kubectl port-forward service/client-service 8086:80
+      ```bash
+         kubectl port-forward service/client-service 8086:80
+      ```
+      And verify `http://localhost:8086/`
+---
 
-    And verify http://localhost:8086/
+## E)🛠️ INSTALLATION GUIDE
 
-## D) INSTALLATION GUIDE
-**Docker**
-```bash    
+**[Docker](https://docs.docker.com/engine/install/)**
+```bash
 sudo apt update   
 sudo apt install docker.io	
 sudo systemctl enable docker 
 sudo systemctl status docker
-Ubuntu user need docker access permission
-```bash    
-sudo usermod -aG docker $USER 
-Add Jenkins user to the Docker group. Jenkins user need permission for building images in pipeline
-```bash    
+```
+```bash
+#Ubuntu user need docker access permission
+sudo usermod -aG docker $USER
+```
+```bash
+#Add Jenkins user to the Docker group. Jenkins user need permission for building images in pipeline
 sudo usermod -aG docker jenkins
+```
+---
 
-**Docker Compose**
-```bash    
+**[Docker Compose](https://docs.docker.com/compose/install/)**
+```bash
 sudo apt update
 sudo apt install docker-compose
 docker-compose version
+```
+---
 
-**KIND for K8S**
-Multi-Node-Cluster Installation for KIND
+**[KIND](https://kind.sigs.k8s.io/)**  
+Multi-Node-Cluster Installation for KIND  
 Create a kind-multi-node.yaml file. 
+```yaml
 # three node (two workers) cluster config
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -169,21 +202,25 @@ nodes:
       hostPort: 81
       listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
       protocol: tcp # Optional, defaults to tcpi
-```bash    
+```
+```bash
 kind create cluster --name=multi-node-cluster --config=kind-multi-node.yaml
+```
 
 ![image](https://github.com/user-attachments/assets/1fdba79b-451c-47ad-ad1e-6129c156f2ab)
-```bash    
-kind get clusters
+```bash
+$ kind get clusters
+```
+---
 
-**Jenkins**
-Jenkins Install guide:  https://www.jenkins.io/doc/book/installing/linux/
-Java is required to run Jenkins. To install Java
-```bash    
+**Jenkins](https://www.jenkins.io/doc/book/installing/)**  
+Install guide:  [Jenkins Official Docs](https://www.jenkins.io/doc/book/installing/linux/)  
+Java is required to run Jenkins. Run below command to install Java
+```bash
 sudo apt update
 sudo apt install openjdk-17-jre-headless
-
-```bash    
+```
+```bash
 sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
 echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
@@ -191,16 +228,19 @@ echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update
 sudo apt-get install Jenkins
-
-You can enable the Jenkins service to start at boot with the command:
-```bash    
+```
+```bash
+#You can enable the Jenkins service to start at boot with the command:
 sudo systemctl enable jenkins
-You can start the Jenkins service with the command:
-```bash    
+```
+```bash
+#You can start the Jenkins service with the command:
 sudo systemctl start jenkins
-You can check the status of the Jenkins service using the command:
-```bash    
+```
+```bash
+#You can check the status of the Jenkins service using the command:
 sudo systemctl status Jenkins
+```
 ![image](https://github.com/user-attachments/assets/8861a338-d93a-4e4f-82f3-c2c389bbed51)
 If status is active, the highlighted value in above image is the initial password.
 
@@ -213,20 +253,29 @@ Ensure these Jenkins plugins are installed:
 2.	Kubernetes CLI
 ![image](https://github.com/user-attachments/assets/fd467ea4-1921-4671-a6a8-012bb9b0cb69)
 
-**kubectl on Jenkins Server**
-```bash    
+---
+
+**[kubectl](https://kubernetes.io/docs/tasks/tools/)**  
+```bash
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 kubectl version --client
-
+```
+---
 MongoDB Atlas is a cloud db. You can pass mongodb connection string in application and verify the database connection instead of creating a pod for database.
 ![image](https://github.com/user-attachments/assets/08b89d59-2602-411c-8cae-3a9e5e29c683)
 
+----
+
 ## E) REFERENCES
-**MERN stack application**
-[https://www.mongodb.com/resources/languages/mern-stack-tutorial] (https://www.mongodb.com/resources/languages/mern-stack-tutorial)
-[https://dev.to/yash_patil16/building-a-robust-cicd-pipeline-using-jenkins-for-a-mern-stack-application-592c?utm_source=chatgpt.com] (https://dev.to/yash_patil16/building-a-robust-cicd-pipeline-using-jenkins-for-a-mern-stack-application-592c?utm_source=chatgpt.com)
-[https://github.com/YashPatil1609/MERN-CI-CD-Jenkins/blob/main/docker-compose.yml] (https://github.com/YashPatil1609/MERN-CI-CD-Jenkins/blob/main/docker-compose.yml)
-**MongoDB**
-[https://www.w3schools.com/mongodb/] (https://www.w3schools.com/mongodb/)
+
+**MERN stack application**  
+[https://www.mongodb.com/resources/languages/mern-stack-tutorial](https://www.mongodb.com/resources/languages/mern-stack-tutorial)  
+[https://dev.to/yash_patil16/building-a-robust-cicd-pipeline-using-jenkins-for-a-mern-stack-application-592c?utm_source=chatgpt.com](https://dev.to/yash_patil16/building-a-robust-cicd-pipeline-using-jenkins-for-a-mern-stack-application-592c?utm_source=chatgpt.com)  
+[https://github.com/YashPatil1609/MERN-CI-CD-Jenkins/blob/main/docker-compose.yml](https://github.com/YashPatil1609/MERN-CI-CD-Jenkins/blob/main/docker-compose.yml)  
+
+**MongoDB**  
+[https://www.w3schools.com/mongodb/](https://www.w3schools.com/mongodb/)
+
+---
